@@ -1,10 +1,29 @@
 import {
+  BelongsTo,
   Column,
   DataType,
+  ForeignKey,
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
+} from 'sequelize-typescript'
+import { Account } from 'src/accounts/entities/account.entity'
+import { ToNumber } from 'src/common/db/to-number.decorator'
+
+export enum TransactionCategory {
+  CATEGORY1 = 'category1',
+  CATEGORY2 = 'category1',
+}
+
+export const TransactionCategoryList: string[] =
+  Object.values(TransactionCategory)
+
+export enum TransactionType {
+  CREDIT = 'credit',
+  DEBIT = 'debit',
+}
+
+export const TransactionTypeList: string[] = Object.values(TransactionType)
 
 @Table({
   tableName: 'transactions',
@@ -14,17 +33,35 @@ import {
 export class Transaction extends Model {
   @PrimaryKey
   @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
-  id: string;
+  id: string
+
   @Column({ allowNull: false })
-  payment_date: Date;
+  payment_date: Date
+
   @Column({ allowNull: false })
-  name: string;
+  name: string
+
   @Column({ allowNull: false })
-  description: string;
+  description: string
+
   @Column({ allowNull: false })
-  category: string;
+  category: TransactionCategory
+
+  @ToNumber
+  @Column({ allowNull: false, type: DataType.DECIMAL(10, 2) })
+  amount: number
+
   @Column({ allowNull: false })
-  amount: number;
-  @Column({ allowNull: false })
-  type: string;
+  type: TransactionType
+
+  @ForeignKey(() => Account)
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    allowNull: false,
+  })
+  account_id: string
+
+  @BelongsTo(() => Account)
+  account: Account
 }
