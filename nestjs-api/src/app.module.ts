@@ -7,10 +7,10 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { CommonModule } from './common/common.module'
+import { ReportsModule } from './reports/reports.module'
 import { TenantModule } from './tenant/tenant.module'
 import { Transaction } from './transactions/entities/transaction.entity'
 import { TransactionsModule } from './transactions/transactions.module'
-import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { ReportsModule } from './reports/reports.module';
       synchronize: true,
       sync: {
         alter: true,
-        // force: true,
+        force: true,
       },
     }),
     TransactionsModule,

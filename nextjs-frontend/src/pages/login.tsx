@@ -5,7 +5,6 @@ import { useEffect } from 'react'
 
 const LoginPage: NextPage = () => {
   const { initialized, keycloak } = useKeycloak<KeycloakInstance>()
-
   const { login = () => {}, authenticated } = keycloak || {}
 
   useEffect(() => {

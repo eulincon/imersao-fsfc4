@@ -18,6 +18,13 @@ function MyApp({ Component, pageProps, cookies }: AppProps & { cookies: any }) {
     <SSRKeycloakProvider
       persistor={SSRCookies(cookies)}
       keycloakConfig={KEYCLOAK_PUBLIC_CONFIG}
+      initOptions={{
+        onLoad: 'check-sso',
+        silentCheckSsoRedirectUri:
+          typeof window !== 'undefined'
+            ? `${window.location.origin}/silent-check-sso.html`
+            : null,
+      }}
     >
       <ThemeProvider theme={theme}>
         <CssBaseline />

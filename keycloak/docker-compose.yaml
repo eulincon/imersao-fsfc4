@@ -3,9 +3,9 @@ version: '3'
 services:
   app:
     image: jboss/keycloak:15.0.0
-    # volumes:
-    #- ./realm-export.json:/tmp/realm-export.json
-    # - ./.docker/keycloak:/opt/jboss/keycloak/standalone/data
+    volumes:
+      - ./realm-export.json:/tmp/realm-export.json
+      # - ./.docker/keycloak:/opt/jboss/keycloak/standalone/data
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
