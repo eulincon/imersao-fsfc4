@@ -27,7 +27,7 @@ import { TransactionsModule } from './transactions/transactions.module'
       synchronize: true,
       sync: {
         alter: true,
-        force: true,
+        // force: true,
       },
     }),
     TransactionsModule,

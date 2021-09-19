@@ -14,7 +14,7 @@ import {
   TableHeaderRow,
   Toolbar,
 } from '@devexpress/dx-react-grid-material-ui'
-import { Button, Typography } from '@material-ui/core'
+import { Button, Link, Typography } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
 import { format, parseISO } from 'date-fns'
 import { NextPage } from 'next'
@@ -22,32 +22,38 @@ import { useRouter } from 'next/router'
 import { Head } from '../../components/Head'
 import { Page } from '../../components/Page'
 import { withAuth } from '../../hof/withAuth'
+import { useAuthSwr } from '../../hooks/useAuthSwr'
 import makeHttp from '../../utils/http'
-import { Transaction } from '../../utils/models'
-
-interface TransactionsPageProps {
-  transactions: Transaction[]
-}
 
 const columns: Column[] = [
   {
-    name: 'payment_date',
-    title: 'Data pag.',
+    name: 'start_date',
+    title: 'Inicio',
     getCellValue: (row: any, columnName: string) => {
       return format(parseISO(row[columnName].slice(0, 10)), 'dd/MM/yyyy')
     },
   },
   {
-    name: 'name',
-    title: 'Nome',
+    name: 'end_date',
+    title: 'Fim',
+    getCellValue: (row: any, columnName: string) => {
+      return format(parseISO(row[columnName].slice(0, 10)), 'dd/MM/yyyy')
+    },
   },
   {
-    name: 'category',
-    title: 'Categoria',
+    name: 'status',
+    title: 'Status',
   },
   {
-    name: 'type',
-    title: 'Operação',
+    name: 'file_url',
+    title: 'Download',
+    getCellValue: (row: any, columnName: string) => {
+      return row[columnName] ? (
+        <Link href={row[columnName]} rel="noreferrer" target="_blank">
+          Link
+        </Link>
+      ) : null
+    },
   },
   {
     name: 'created_at',
@@ -58,28 +64,33 @@ const columns: Column[] = [
   },
 ]
 
-const TransactionsPage: NextPage<TransactionsPageProps> = (props) => {
+const ReportsListPage: NextPage<{ reports: any }> = ({ reports }) => {
   const router = useRouter()
+  const { data, error } = useAuthSwr('reports', {
+    refreshInterval: 20000,
+    fallbackData: reports,
+  })
+
   return (
     <Page>
-      <Head title="Minhas transações" />
-      <Typography component="h1" variant="h4">
-        Minhas transações
+      <Head title="Meus relatórios" />
+      <Typography component="h1" variant="h4" color="textPrimary" gutterBottom>
+        Relatórios
       </Typography>
       <Button
         startIcon={<AddIcon />}
         variant={'contained'}
         color="primary"
-        onClick={() => router.push('/transactions/new')}
+        onClick={() => router.push('/reports/new')}
       >
         Criar
       </Button>
-      <Grid rows={props.transactions} columns={columns}>
+      <Grid rows={data} columns={columns}>
         <Table />
         <SortingState
           defaultSorting={[{ columnName: 'created_at', direction: 'desc' }]}
         />
-        <SearchState defaultValue="Conta de luz" />
+        <SearchState defaultValue="" />
         <PagingState defaultCurrentPage={0} pageSize={5} />
         <TableHeaderRow showSortingControls />
         <IntegratedFiltering />
@@ -92,14 +103,14 @@ const TransactionsPage: NextPage<TransactionsPageProps> = (props) => {
   )
 }
 
-export default TransactionsPage
+export default ReportsListPage
 
 export const getServerSideProps = withAuth(async (ctx, { token }) => {
-  const { data: transactions } = await makeHttp(token).get('transactions')
+  const { data: reports } = await makeHttp(token).get('reports')
 
   return {
     props: {
-      transactions,
+      reports,
     },
   }
 })
